@@ -1,16 +1,29 @@
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.response import Response
+from rest_framework import status
 import requests
 import json
+from os import environ
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.parsers import MultiPartParser, FormParser
 
-# import streamlit as st
 
 
 url = "https://api.vectara.io/v1/query"
-api_key = "zut_IccVS9aWrgH6-s9K--BKSt9pVfYKgClXR8j3cg"
+api_key = environ.get("API_KEY")
+customer_id = environ.get("CUSTOMER_ID")
 
-
-@require_http_methods(["GET"])
+@swagger_auto_schema(
+    method="get",
+    manual_parameters=[
+        openapi.Parameter('company', openapi.IN_QUERY, description="Company name", type=openapi.TYPE_STRING),
+        openapi.Parameter('prompt', openapi.IN_QUERY, description="Prompt for the query", type=openapi.TYPE_STRING),
+    ]
+)
+@api_view(["GET"])
+@parser_classes((MultiPartParser, FormParser))
 def query(request):
     # Extract prompt from query parameters
     prompt = request.GET.get("prompt", "")  # Example: /query/?prompt=your_prompt_here
@@ -28,6 +41,58 @@ def query(request):
 
     if not prompt:
         return JsonResponse({"result": "Please insert question"}, status=400)
+
+@swagger_auto_schema(
+    method="post",
+    manual_parameters=[
+        openapi.Parameter(
+            name="uploaded_file",
+            in_=openapi.IN_FORM,
+            description="PDF File about Company FAQ",
+            type="file",
+            required=True,
+        ),
+         openapi.Parameter('company', openapi.IN_QUERY, description="Company name", type=openapi.TYPE_STRING),
+    ],
+    responses={200: openapi.Response("File successfully uploaded!")},
+)
+@api_view(["POST"])
+@parser_classes((MultiPartParser, FormParser))
+def uploadFile(request):
+
+    upload_url = "https://api.vectara.io/v1/upload?c=566695243&o=7"
+
+    if "uploaded_file" not in request.FILES:
+        return JsonResponse({"error": "No pdf file provided"}, status=400, safe=False)
+
+    if not request.GET.get("company", ""):
+        return JsonResponse({"error": "Company name not provided"}, status=400, safe=False)
+    
+    uploaded_file = request.FILES["uploaded_file"]
+
+    company = request.GET.get("company", "")
+    filename = uploaded_file.name
+
+    # write to file
+    with open(filename, "wb") as f:
+        f.write(uploaded_file.read())
+
+    filepath = f"{filename}"
+
+    files = [("file", (f"{filename}", open(filepath, "rb"), "application/pdf"))]
+    payload = {"doc_metadata": json.dumps({"Company": company})}
+
+    headers = {
+        "Accept": "application/json",
+        "x-api-key": api_key,
+        "customer-id": customer_id,
+    }
+
+    response = requests.request("POST", upload_url, headers=headers, data=payload, files=files)
+
+    print(response.text)
+
+    return JsonResponse(response.text, safe=False)
 
 
 def get_response(prompt, company):
@@ -48,7 +113,7 @@ def get_response(prompt, company):
                 },
                 "corpusKey": [
                     {
-                        "customerId": 566695243,
+                        "customerId": customer_id,
                         "corpusId": 8,
                         "semantics": 0,
                         "metadataFilter": f"doc.Company='{company}'",
@@ -74,7 +139,7 @@ def get_response(prompt, company):
         "Content-Type": "application/json",
         "Accept": "application/json",
         "x-api-key": api_key,
-        "customer-id": "566695243",
+        "customer-id": customer_id,
     }
 
     response = requests.post(url, headers=headers, json=payload)
