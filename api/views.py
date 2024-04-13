@@ -61,7 +61,7 @@ def query(request):
 @parser_classes((MultiPartParser, FormParser))
 def uploadFile(request):
 
-    upload_url = f"https://api.vectara.io/v1/upload?c=566695243&o={corpus_id}"
+    upload_url = f"https://api.vectara.io/v1/upload?c={customer_id}&o={corpus_id}"
 
     if "uploaded_file" not in request.FILES:
         return JsonResponse({"error": "No pdf file provided"}, status=400, safe=False)
