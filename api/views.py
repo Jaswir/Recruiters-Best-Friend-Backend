@@ -74,13 +74,7 @@ def uploadFile(request):
     company = request.GET.get("company", "")
     filename = uploaded_file.name
 
-    # write to file
-    with open(filename, "wb") as f:
-        f.write(uploaded_file.read())
-
-    filepath = f"{filename}"
-
-    files = [("file", (f"{filename}", open(filepath, "rb"), "application/pdf"))]
+    files = [("file", (f"{filename}", uploaded_file.read(), "application/pdf"))]
     payload = {"doc_metadata": json.dumps({"Company": company})}
 
     headers = {
