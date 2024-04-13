@@ -14,6 +14,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 url = "https://api.vectara.io/v1/query"
 api_key = environ.get("API_KEY")
 customer_id = environ.get("CUSTOMER_ID")
+corpus_id =8
 
 @swagger_auto_schema(
     method="get",
@@ -60,7 +61,7 @@ def query(request):
 @parser_classes((MultiPartParser, FormParser))
 def uploadFile(request):
 
-    upload_url = "https://api.vectara.io/v1/upload?c=566695243&o=7"
+    upload_url = f"https://api.vectara.io/v1/upload?c=566695243&o={corpus_id}"
 
     if "uploaded_file" not in request.FILES:
         return JsonResponse({"error": "No pdf file provided"}, status=400, safe=False)
