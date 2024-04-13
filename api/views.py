@@ -2,27 +2,35 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import requests
 import json
+
 # import streamlit as st
 
 
 url = "https://api.vectara.io/v1/query"
-api_key = "zut_IccVS9aWrgH6-s9K--BKSt9pVfYKgClXR8j3cg" 
+api_key = "zut_IccVS9aWrgH6-s9K--BKSt9pVfYKgClXR8j3cg"
+
 
 @require_http_methods(["GET"])
 def query(request):
     # Extract prompt from query parameters
-    prompt = request.GET.get('prompt', '')  # Example: /cat/?prompt=your_prompt_here
+    prompt = request.GET.get("prompt", "")  # Example: /query/?prompt=your_prompt_here
+    company = request.GET.get("company", "")
 
+        
+    if not company:
+        return JsonResponse({"result": "Invalid Company Name"}, status=400)
     if prompt:
         try:
-            result = get_response(prompt)
-            return JsonResponse({'result': result})
+            result = get_response(prompt, company)
+            return JsonResponse({"result": result})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Missing prompt parameter'}, status=400)
+            return JsonResponse({"error": str(e)}, status=500)
 
-def get_response(prompt):
+    if not prompt:
+        return JsonResponse({"result": "Please insert question"}, status=400)
+
+
+def get_response(prompt, company):
     payload = {
         "query": [
             {
@@ -41,9 +49,9 @@ def get_response(prompt):
                 "corpusKey": [
                     {
                         "customerId": 566695243,
-                        "corpusId": 7,
+                        "corpusId": 8,
                         "semantics": 0,
-                        "metadataFilter": "",
+                        "metadataFilter": f"doc.Company='{company}'",
                         "lexicalInterpolationConfig": {"lambda": 0.98},
                         "dim": [],
                     }
