@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import requests
 import json
-import streamlit as st
+# import streamlit as st
 
 
 url = "https://api.vectara.io/v1/query"
