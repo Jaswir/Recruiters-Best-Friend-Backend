@@ -19,7 +19,13 @@ corpus_id =8
 
 @api_view(["POST"])
 def slackQuery(request):
+    data = request.data
     return JsonResponse({"result": "Hello, World!"})
+   
+@api_view(["POST"])
+def analyzeInput(request):
+    data = request.data
+    return JsonResponse(data)
 
 @swagger_auto_schema(
     method="get",
