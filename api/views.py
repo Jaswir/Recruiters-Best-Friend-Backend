@@ -31,10 +31,9 @@ def slackQuery(request):
    
 @api_view(["POST"])
 def analyzeInput(request):
-    prompt = str(request.text)
     data = {
         'response_type': 'in_channel',
-        'text': prompt,
+        'text': request.text,
     }
     return Response(data, status=status.HTTP_200_OK)
 
