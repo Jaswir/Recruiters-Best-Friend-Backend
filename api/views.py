@@ -18,10 +18,10 @@ corpus_id =8
 
 
 @api_view(["POST"])
-def slackQuery(request, prompt):
+def slackQuery(request):
     data = {
         'response_type': 'in_channel',
-        'text': str(prompt),
+        'text': request.text,
     }
     return Response(data, status=status.HTTP_200_OK)
    
