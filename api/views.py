@@ -25,6 +25,7 @@ def slackQuery(request):
 @api_view(["POST"])
 def analyzeInput(request):
     data = request.data
+    data['text'] = 'Text added mfker'
     return JsonResponse(data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
@@ -32,7 +33,7 @@ def hello_there(request):
 
     data = {
         'response_type': 'in_channel',
-        'text': '<https://youtu.be/frszEJb0aOo|General Kenobi!>',
+        'text': 'sending just text yes',
     }
     return Response(data, status=status.HTTP_200_OK)
 
