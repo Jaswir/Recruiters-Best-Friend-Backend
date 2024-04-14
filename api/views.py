@@ -18,14 +18,17 @@ corpus_id =8
 
 
 @api_view(["POST"])
-def slackQuery(request):
-    data = request.data
-    return JsonResponse({"result": "Hello, World!"})
+def slackQuery(request, prompt):
+    data = {
+        'response_type': 'in_channel',
+        'text': str(prompt),
+    }
+    return Response(data, status=status.HTTP_200_OK)
    
 @api_view(["POST"])
 def analyzeInput(request):
-    data = request.data
-    data['text'] = 'Text added mfker'
+    data = {}
+    data['text'] = request.form.channel_id
     data['response_type'] = 'in_channel'
     return JsonResponse(data, status=status.HTTP_200_OK)
 
