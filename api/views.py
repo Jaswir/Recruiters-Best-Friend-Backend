@@ -28,7 +28,7 @@ def slackQuery(request, prompt):
 @api_view(["POST"])
 def analyzeInput(request):
     data = {}
-    data['text'] = request.form.channel_id
+    data['text'] = request.channel_id
     data['response_type'] = 'in_channel'
     return JsonResponse(data, status=status.HTTP_200_OK)
 
