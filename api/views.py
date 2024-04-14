@@ -20,7 +20,7 @@ corpus_id =8
 @api_view(["POST"])
 def slackQuery(request):
 
-    prompt = request.text
+    prompt = str(request.text)
     result = get_response(prompt, "Gitlab")
 
     data = {
@@ -31,11 +31,12 @@ def slackQuery(request):
    
 @api_view(["POST"])
 def analyzeInput(request):
-    # data = {
-    #     'response_type': 'in_channel',
-    #     'text': request.text,
-    # }
-    return JsonResponse(request.data,safe=False, status=status.HTTP_200_OK)
+    prompt = str(request.text)
+    data = {
+        'response_type': 'in_channel',
+        'text': prompt,
+    }
+    return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def hello_there(request):
