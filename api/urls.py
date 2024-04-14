@@ -43,4 +43,5 @@ urlpatterns = [
     path("upload/", views.uploadFile),
     path("slackQuery/", views.slackQuery),
     path('analyze/', views.analyzeInput),
+    path('hello/', views.hello_there),
 ]

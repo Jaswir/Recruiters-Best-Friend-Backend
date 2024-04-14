@@ -25,7 +25,16 @@ def slackQuery(request):
 @api_view(["POST"])
 def analyzeInput(request):
     data = request.data
-    return JsonResponse(data)
+    return JsonResponse(data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def hello_there(request):
+
+    data = {
+        'response_type': 'in_channel',
+        'text': '<https://youtu.be/frszEJb0aOo|General Kenobi!>',
+    }
+    return Response(data, status=status.HTTP_200_OK)
 
 @swagger_auto_schema(
     method="get",
