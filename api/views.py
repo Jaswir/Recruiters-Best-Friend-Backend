@@ -26,6 +26,7 @@ def slackQuery(request):
 def analyzeInput(request):
     data = request.data
     data['text'] = 'Text added mfker'
+    data['response_type'] = 'in_channel'
     return JsonResponse(data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
