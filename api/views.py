@@ -27,10 +27,11 @@ def slackQuery(request):
    
 @api_view(["POST"])
 def analyzeInput(request):
-    data = {}
-    data['text'] = request.channel_id
-    data['response_type'] = 'in_channel'
-    return JsonResponse(data, status=status.HTTP_200_OK)
+    # data = {
+    #     'response_type': 'in_channel',
+    #     'text': request.text,
+    # }
+    return JsonResponse(request.data,safe=False, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def hello_there(request):
