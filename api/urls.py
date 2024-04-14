@@ -41,4 +41,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("query/", views.query),
     path("upload/", views.uploadFile),
+    path("slackQuery/", views.slackQuery),
 ]

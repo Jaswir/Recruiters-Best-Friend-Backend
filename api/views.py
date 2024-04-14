@@ -16,6 +16,11 @@ api_key = environ.get("API_KEY")
 customer_id = environ.get("CUSTOMER_ID")
 corpus_id =8
 
+
+@api_view(["POST"])
+def slackQuery(request):
+    return JsonResponse({"result": "Hello, World!"})
+
 @swagger_auto_schema(
     method="get",
     manual_parameters=[
@@ -42,6 +47,7 @@ def query(request):
 
     if not prompt:
         return JsonResponse({"result": "Please insert question"}, status=400)
+    
 
 @swagger_auto_schema(
     method="post",
