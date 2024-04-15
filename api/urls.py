@@ -41,7 +41,12 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("query/", views.query),
     path("upload/", views.uploadFile),
+<<<<<<< HEAD
     path("slackQuery/", views.slackQuery),
     path('analyze/', views.analyzeInput),
     path('hello/', views.hello_there),
+=======
+    path("list/", views.list_doc),
+    path("del_doc/", views.del_doc)
+>>>>>>> 1d959ca (added endpoint to delet docs in corpus)
 ]
