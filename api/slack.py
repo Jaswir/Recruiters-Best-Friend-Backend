@@ -11,6 +11,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 verification_token = environ.get("VERIFICATION_TOKEN")
 def slash(request):
+     print("Slacking slashing baybee")
+     print(request)
      if request.form['token'] == verification_token:
         payload = {'text': 'DigitalOcean Slack slash command is successful!'}
         return JsonResponse(payload)

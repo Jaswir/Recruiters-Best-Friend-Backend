@@ -37,6 +37,8 @@ def analyzeInput(request):
 @api_view(["POST"])
 def hello_there(request):
 
+    print(request)
+    print("CAN YOU SEE THIS HELLO? ")
     data = {
         "response_type": "in_channel",
         "text": "sending just text yes",
