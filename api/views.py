@@ -19,13 +19,9 @@ corpus_id =8
 
 @api_view(["POST"])
 def slackQuery(request):
-
-    prompt = str(request.text)
-    result = get_response(prompt, "Gitlab")
-
     data = {
         'response_type': 'in_channel',
-        'text': result,
+        'text': request.text,
     }
     return Response(data, status=status.HTTP_200_OK)
    
