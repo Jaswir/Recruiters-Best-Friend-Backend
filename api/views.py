@@ -38,6 +38,7 @@ def analyzeInput(request):
 def hello_there(request):
 
     print(request)
+    print(request.data)
     print("CAN YOU SEE THIS HELLO? ")
     data = {
         "response_type": "in_channel",
