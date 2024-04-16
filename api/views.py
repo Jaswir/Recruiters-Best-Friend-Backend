@@ -40,9 +40,9 @@ def hello_there(request):
     print("CAN YOU SEE THIS HELLO? ")
     print(request)
     print(request.data)
-    text = request.get('text', '')
+    text = request.POST.get("text", "")
 
-    print("TEXT", text)
+    print("TEXT: ", text)
 
  
     data = {
