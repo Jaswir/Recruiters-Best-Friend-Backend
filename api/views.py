@@ -12,8 +12,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 
 url = "https://api.vectara.io/v1/query"
-api_key = environ.get("API_KEY")
-customer_id = environ.get("CUSTOMER_ID")
+api_key = "zut_Ic9aWrgH6-s9K--BKSt9pVfYKgClXR8j3cg"
+customer_id = "565243"
 corpus_id =8
 
 
@@ -60,6 +60,7 @@ def query(request):
     if not company:
         return JsonResponse({"result": "Invalid Company Name"}, status=400)
     if prompt:
+        print(f"prompt {prompt},     company {company}")
         try:
             result = get_response(prompt, company)
             return JsonResponse({"result": result})
@@ -117,6 +118,7 @@ def uploadFile(request):
     return JsonResponse(response.text, safe=False)
 
 
+
 def get_response(prompt, company):
     payload = {
         "query": [
@@ -168,4 +170,70 @@ def get_response(prompt, company):
 
     response_data = response.json()
     result = response_data["responseSet"][0]["summary"][0]["text"]
+    print("This is the results we are getting ",response_data)
     return result
+
+
+def list_doc(request):
+    url = "https://api.vectara.io/v1/list-documents"
+
+    payload = json.dumps({
+  "corpusId": 2,
+  "numResults": 1000,
+  "pageKey": "",
+  "metadataFilter": ""
+})
+
+    headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'customer-id': "490573794",
+  'x-api-key': "zut_HT2P4pWOuBezplp_oiyFZ7RpKJxSnS1mkRHHnQ "
+}
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+     # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Return the JSON response from the external API
+        return JsonResponse(response.json(), safe=False)
+    else:
+        # If the request was unsuccessful, return an error response
+        return JsonResponse({"error": "Failed to fetch documents"}, status=response.status_code)
+    
+
+@api_view(["GET"])
+@parser_classes((MultiPartParser, FormParser))
+def del_doc(request):
+
+    url = "https://api.vectara.io/v1/delete-doc"
+
+    # geting list of documents in the json 
+    response = list_doc(request)
+    # Extracting content from json reponse that we recieved from above method
+    content = response.content
+    # Assuming content is utf-8 encoding we are decoding it
+    decoded_content = content.decode('utf-8') 
+    # loading content which will give us dictionary
+    doc_list = json.loads(decoded_content)
+
+    # Iterating over the each id of document 
+    for i in range(len(doc_list["document"])):
+         
+         payload = json.dumps({
+                                "customerId": "490573794",
+                                "corpusId": 2,
+                                "documentId": doc_list["document"][i]['id']
+                                })
+         headers = {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            "cutomer-id":"490573794",
+                            'x-api-key': 'zwt_HT2P4rTH1DJiNFzHXTbokteUFgVxlCWH7sAXqQ'
+                            }
+
+         response = requests.request("POST", url, headers=headers, data=payload)
+    
+
+    return JsonResponse({"Task": "Deleted docs"})
+    
+
