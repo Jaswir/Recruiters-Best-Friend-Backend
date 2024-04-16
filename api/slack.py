@@ -16,11 +16,13 @@ def slash(request):
     print("SLASH SLASH BABY")
     print(request)
     print(request.data)
-    text = request.get('text', '')
+    text = request.POST.get("text", "")
+
+    print("TEXT: ", text)
 
  
     data = {
         "response_type": "in_channel",
-        "text": "sending just text yes",
+        "text": text,
     }
     return Response(data, status=status.HTTP_200_OK)

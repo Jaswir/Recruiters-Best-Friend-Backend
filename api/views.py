@@ -18,20 +18,44 @@ corpus_id = 8
 
 @api_view(["POST"])
 def slackQuery(request):
+    print("CAN YOU SEE THIS slackQuery? ")
+    print(request)
+    print(request.data)
+    text = request.POST.get("text", "")
+   
+
+    print("TEXT: ", text)
+
+    result = get_response(text, "Gitlab")
+    
+    print("RESULT: ", result)
+
+ 
     data = {
         "response_type": "in_channel",
-        "text": request.text,
+        "text": result,
     }
     return Response(data, status=status.HTTP_200_OK)
+
 
 
 @api_view(["POST"])
 def analyzeInput(request):
+    print("CAN YOU SEE THIS analyzeInput? ")
+    print(request)
+    print(request.data)
+    text = request.POST.get("text", "") 
+    text = "  This is the response from the server: " + text
+
+    print("TEXT: ", text)
+
+ 
     data = {
         "response_type": "in_channel",
-        "text": request.text,
+        "text": text,
     }
     return Response(data, status=status.HTTP_200_OK)
+
 
 
 @api_view(["POST"])
