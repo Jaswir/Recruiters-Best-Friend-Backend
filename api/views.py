@@ -228,7 +228,7 @@ def get_response(prompt, company):
              print(f"after getting max {score}")
     # print(score)
     # print("This is the results we are getting ", response_data)
-    if score >= 6: 
+    if score >= 0.6: 
         print(score)
         return result
     else: return "I don't have engough data regarding your query! I applogize for inconvience \n Rephrase you question or ask me anyother question \n\n Before asking query you may take look on data that I have!"
