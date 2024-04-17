@@ -45,7 +45,7 @@ urlpatterns = [
     path("slackQuery/", views.slackQuery),
     path('analyze/', views.analyzeInput),
     path('hello/', views.hello_there),
-    path("list/", views.list_doc),
+    path("list/<company>", views.list_doc),
     path("del_doc/<id>", views.del_doc),
     path("slash/", slack.slash),
 ]

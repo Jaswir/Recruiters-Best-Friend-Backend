@@ -22,15 +22,13 @@ def slackQuery(request):
     print(request)
     print(request.data)
     text = request.POST.get("text", "")
-   
 
     print("TEXT: ", text)
 
     result = get_response(text, "Gitlab")
-    
+
     print("RESULT: ", result)
 
- 
     data = {
         "response_type": "in_channel",
         "text": result,
@@ -38,24 +36,21 @@ def slackQuery(request):
     return Response(data, status=status.HTTP_200_OK)
 
 
-
 @api_view(["POST"])
 def analyzeInput(request):
     print("CAN YOU SEE THIS analyzeInput? ")
     print(request)
     print(request.data)
-    text = request.POST.get("text", "") 
+    text = request.POST.get("text", "")
     text = "  This is the response from the server: " + text
 
     print("TEXT: ", text)
 
- 
     data = {
         "response_type": "in_channel",
         "text": text,
     }
     return Response(data, status=status.HTTP_200_OK)
-
 
 
 @api_view(["POST"])
@@ -68,7 +63,6 @@ def hello_there(request):
 
     print("TEXT: ", text)
 
- 
     data = {
         "response_type": "in_channel",
         "text": text,
@@ -226,7 +220,7 @@ def get_response(prompt, company):
 
 
 @api_view(["GET"])
-def list_doc(request):
+def list_doc(request,company):
     url = "https://api.vectara.io/v1/list-documents"
 
     payload = json.dumps(
@@ -240,16 +234,26 @@ def list_doc(request):
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
-    
+    data = response.json()
+    data = data["document"]
+    company_items = filter(lambda item: is_company(item, company), data)
+    company_items = list(company_items)
+
+    ids = [item.get("id") for item in company_items]
+
     # Check if the request was successful (status code 200)
     if response.status_code == 200:
         # Return the JSON response from the external API
-        return JsonResponse(response.json(), safe=False)
+        return JsonResponse(ids, safe=False)
     else:
         # If the request was unsuccessful, return an error response
         return JsonResponse(
             {"error": "Failed to fetch documents"}, status=response.status_code
         )
+
+
+def is_company(item, company):
+    return any(metadata.get("value") == company for metadata in item.get("metadata"))
 
 
 @api_view(["GET"])
