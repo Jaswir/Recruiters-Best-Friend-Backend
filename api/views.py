@@ -11,8 +11,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 
 url = "https://api.vectara.io/v1/query"
-api_key = environ.get("API_KEY")
-customer_id = environ.get("CUSTOMER_ID")
+api_key = "zut_IccVS9aWrgH6-s9K--BKSt9pVfYKgClXR8j3cg" #environ.get("API_KEY")
+customer_id = "566695243" #environ.get("CUSTOMER_ID")
 corpus_id = 8
 
 
@@ -216,8 +216,22 @@ def get_response(prompt, company):
 
     response_data = response.json()
     result = response_data["responseSet"][0]["summary"][0]["text"]
-    print("This is the results we are getting ", response_data)
-    return result
+    score = 0 
+
+    for response_dict in response_data["responseSet"]:
+    # Access the 'response' key, which contains a list of response dictionaries
+        for item in response_dict["response"]:
+        
+             scr = item["score"]
+             print(scr, score)
+             score = max(score,scr)
+             print(f"after getting max {score}")
+    # print(score)
+    # print("This is the results we are getting ", response_data)
+    if score >= 6: 
+        print(score)
+        return result
+    else: return "I don't have engough data regarding your query! I applogize for inconvience \n Rephrase you question or ask me anyother question \n\n Before asking query you may take look on data that I have!"
 
 
 @api_view(["GET"])
