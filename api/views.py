@@ -11,8 +11,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 
 url = "https://api.vectara.io/v1/query"
-api_key = "zut_IccVS9aWrgH6-s9K--BKSt9pVfYKgClXR8j3cg" #environ.get("API_KEY")
-customer_id = "566695243" #environ.get("CUSTOMER_ID")
+api_key = environ.get("API_KEY")
+customer_id = environ.get("CUSTOMER_ID")
 corpus_id = 8
 
 
