@@ -165,13 +165,14 @@ def uploadFile(request):
 
 
 def get_response(prompt, company):
+  
     payload = {
         "query": [
             {
                 "query": prompt,
                 "queryContext": "",
                 "start": 0,
-                "numResults": 10,
+                "numResults": 3,
                 "contextConfig": {
                     "charsBefore": 0,
                     "charsAfter": 0,
@@ -185,8 +186,8 @@ def get_response(prompt, company):
                         "customerId": customer_id,
                         "corpusId": 8,
                         "semantics": 0,
-                        "metadataFilter": f"doc.Company='{company}'",
-                        "lexicalInterpolationConfig": {"lambda": 0.98},
+                        "metadataFilter": f"doc.Company='{company.title()}'",
+                        "lexicalInterpolationConfig": {"lambda": 1},
                         "dim": [],
                     }
                 ],
@@ -194,7 +195,7 @@ def get_response(prompt, company):
                     {
                         "debug": False,
                         "chat": {"store": True, "conversationId": ""},
-                        "maxSummarizedResults": 5,
+                        "maxSummarizedResults": 3,
                         "responseLang": "eng",
                         "summarizerPromptName": "vectara-summary-ext-v1.2.0",
                         "factualConsistencyScore": True,
