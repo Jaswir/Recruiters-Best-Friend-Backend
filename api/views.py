@@ -13,7 +13,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 url = "https://api.vectara.io/v1/query"
 api_key = environ.get("API_KEY")
 customer_id = environ.get("CUSTOMER_ID")
-corpus_id = 8
+corpus_id = 12
 
 
 @api_view(["POST"])
@@ -34,41 +34,6 @@ def slackQuery(request):
         "text": result,
     }
     return Response(data, status=status.HTTP_200_OK)
-
-
-@api_view(["POST"])
-def analyzeInput(request):
-    print("CAN YOU SEE THIS analyzeInput? ")
-    print(request)
-    print(request.data)
-    text = request.POST.get("text", "")
-    text = "  This is the response from the server: " + text
-
-    print("TEXT: ", text)
-
-    data = {
-        "response_type": "in_channel",
-        "text": text,
-    }
-    return Response(data, status=status.HTTP_200_OK)
-
-
-@api_view(["POST"])
-def hello_there(request):
-
-    print("CAN YOU SEE THIS HELLO? ")
-    print(request)
-    print(request.data)
-    text = request.POST.get("text", "")
-
-    print("TEXT: ", text)
-
-    data = {
-        "response_type": "in_channel",
-        "text": text,
-    }
-    return Response(data, status=status.HTTP_200_OK)
-
 
 @swagger_auto_schema(
     method="get",
@@ -147,7 +112,7 @@ def uploadFile(request):
     filename = uploaded_file.name
 
     files = [("file", (f"{filename}", uploaded_file.read(), "application/pdf"))]
-    payload = {"doc_metadata": json.dumps({"Company": company})}
+    payload = {"doc_metadata": json.dumps({"HTML": company})}
 
     headers = {
         "Accept": "application/json",
@@ -184,9 +149,8 @@ def get_response(prompt, company):
                 "corpusKey": [
                     {
                         "customerId": customer_id,
-                        "corpusId": 8,
+                        "corpusId": corpus_id,
                         "semantics": 0,
-                        "metadataFilter": f"doc.Company='{company.title()}'",
                         "lexicalInterpolationConfig": {"lambda": 1},
                         "dim": [],
                     }

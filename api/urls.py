@@ -20,7 +20,6 @@ from rest_framework import permissions
 from django.contrib import admin
 from django.urls import path, include
 from api import views
-from api import slack
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -43,9 +42,6 @@ urlpatterns = [
     path("query/", views.query),
     path("upload/", views.uploadFile),
     path("slackQuery/", views.slackQuery),
-    path('analyze/', views.analyzeInput),
-    path('hello/', views.hello_there),
     path("list/<company>", views.list_doc),
     path("del_doc/<id>", views.del_doc),
-    path("slash/", slack.slash),
 ]
