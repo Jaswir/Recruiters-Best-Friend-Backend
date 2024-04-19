@@ -259,8 +259,11 @@ def askGPT3(prompt, raw_answer):
 
     client = OpenAI(api_key=environ.get("OPEN_AI_KEY"))
 
+    print("key: ", environ.get("OPEN_AI_KEY"))
+
     input = prompt + "this is the raw answer use it in your response: " + raw_answer
-    
+
+    print("Input: ", input)
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -275,3 +278,23 @@ def askGPT3(prompt, raw_answer):
     )
 
     return response.choices[0].message.content
+
+@api_view(["GET"])
+def testGPT3(request, prompt):
+    client = OpenAI(api_key=environ.get("OPEN_AI_KEY"))
+
+    print("key: ", environ.get("OPEN_AI_KEY"))
+
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": """You are a helpful assistant""",
+            },
+            {"role": "user", "content": prompt},
+        ],
+    )
+
+    return JsonResponse(response.choices[0].message.content, safe=False)
