@@ -13,7 +13,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 url = "https://api.vectara.io/v1/query"
 api_key = environ.get("API_KEY")
 customer_id = environ.get("CUSTOMER_ID")
-corpus_id = 12
+corpus_id = 8
 
 
 @api_view(["POST"])
@@ -34,6 +34,41 @@ def slackQuery(request):
         "text": result,
     }
     return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def analyzeInput(request):
+    print("CAN YOU SEE THIS analyzeInput? ")
+    print(request)
+    print(request.data)
+    text = request.POST.get("text", "")
+    text = "  This is the response from the server: " + text
+
+    print("TEXT: ", text)
+
+    data = {
+        "response_type": "in_channel",
+        "text": text,
+    }
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def hello_there(request):
+
+    print("CAN YOU SEE THIS HELLO? ")
+    print(request)
+    print(request.data)
+    text = request.POST.get("text", "")
+
+    print("TEXT: ", text)
+
+    data = {
+        "response_type": "in_channel",
+        "text": text,
+    }
+    return Response(data, status=status.HTTP_200_OK)
+
 
 @swagger_auto_schema(
     method="get",
@@ -112,7 +147,7 @@ def uploadFile(request):
     filename = uploaded_file.name
 
     files = [("file", (f"{filename}", uploaded_file.read(), "application/pdf"))]
-    payload = {"doc_metadata": json.dumps({"HTML": company})}
+    payload = {"doc_metadata": json.dumps({"Company": company})}
 
     headers = {
         "Accept": "application/json",
@@ -149,8 +184,9 @@ def get_response(prompt, company):
                 "corpusKey": [
                     {
                         "customerId": customer_id,
-                        "corpusId": corpus_id,
+                        "corpusId": 8,
                         "semantics": 0,
+                        "metadataFilter": f"doc.Company='{company.title()}'",
                         "lexicalInterpolationConfig": {"lambda": 1},
                         "dim": [],
                     }
@@ -180,22 +216,8 @@ def get_response(prompt, company):
 
     response_data = response.json()
     result = response_data["responseSet"][0]["summary"][0]["text"]
-    score = 0 
-
-    for response_dict in response_data["responseSet"]:
-    # Access the 'response' key, which contains a list of response dictionaries
-        for item in response_dict["response"]:
-        
-             scr = item["score"]
-             print(scr, score)
-             score = max(score,scr)
-             print(f"after getting max {score}")
-    # print(score)
-    # print("This is the results we are getting ", response_data)
-    if score >= 0.6: 
-        print(score)
-        return result
-    else: return "I don't have engough data regarding your query! I applogize for inconvience \n Rephrase you question or ask me anyother question \n\n Before asking query you may take look on data that I have!"
+    print("This is the results we are getting ", response_data)
+    return result
 
 
 @api_view(["GET"])
