@@ -8,7 +8,6 @@ from os import environ
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser, FormParser
-from openai import OpenAI
 
 
 url = "https://api.vectara.io/v1/query"
@@ -35,7 +34,6 @@ def slackQuery(request):
         "text": result,
     }
     return Response(data, status=status.HTTP_200_OK)
-
 
 @swagger_auto_schema(
     method="get",
@@ -64,7 +62,7 @@ def query(request):
     if not company:
         return JsonResponse({"result": "Invalid Company Name"}, status=400)
     if prompt:
-        print(f"prompt: {prompt}, \n company: {company}")
+        print(f"prompt {prompt},     company {company}")
         try:
             result = get_response(prompt, company)
             return JsonResponse({"result": result})
@@ -132,7 +130,7 @@ def uploadFile(request):
 
 
 def get_response(prompt, company):
-
+  
     payload = {
         "query": [
             {
@@ -153,7 +151,7 @@ def get_response(prompt, company):
                         "customerId": customer_id,
                         "corpusId": corpus_id,
                         "semantics": 0,
-                        "metadataFilter": "",
+                        "lexicalInterpolationConfig": {"lambda": 1},
                         "dim": [],
                     }
                 ],
@@ -163,7 +161,7 @@ def get_response(prompt, company):
                         "chat": {"store": True, "conversationId": ""},
                         "maxSummarizedResults": 3,
                         "responseLang": "eng",
-                        "summarizerPromptName": "vectara-experimental-summary-ext-2023-12-11-large",
+                        "summarizerPromptName": "vectara-summary-ext-v1.2.0",
                         "factualConsistencyScore": True,
                     }
                 ],
@@ -175,26 +173,19 @@ def get_response(prompt, company):
         "Content-Type": "application/json",
         "Accept": "application/json",
         "x-api-key": api_key,
+        "customer-id": customer_id,
     }
 
     response = requests.post(url, headers=headers, json=payload)
 
     response_data = response.json()
-    result = response_data["responseSet"][0]["summary"][0]
-    RawAnswer = result["text"]
-
-    # print("Output Vectara: ", RawAnswer)
-    # factualConsistencyScore = result["factualConsistency"]["score"]
-    # print("Factual Consistency Score: ", factualConsistencyScore)
-
-    # text = askGPT3(prompt, RawAnswer)
-    # print("Output GPT3: ", text)
-
-    return RawAnswer
+    result = response_data["responseSet"][0]["summary"][0]["text"]
+    print("This is the results we are getting ", response_data)
+    return result
 
 
 @api_view(["GET"])
-def list_doc(request, company):
+def list_doc(request,company):
     url = "https://api.vectara.io/v1/list-documents"
 
     payload = json.dumps(
@@ -253,48 +244,3 @@ def del_doc(request, id):
     response = requests.request("POST", url, headers=headers, data=payload)
 
     return JsonResponse({"Task": "Deleted docs"})
-
-
-def askGPT3(prompt, raw_answer):
-
-    client = OpenAI(api_key=environ.get("OPEN_AI_KEY"))
-
-    print("key: ", environ.get("OPEN_AI_KEY"))
-
-    input = prompt + "this is the raw answer use it in your response: " + raw_answer
-
-    print("Input: ", input)
-
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": """You are an interview process assistant for Gitlab, mention this when greeted.
-                You role is to answer questions about our hiring processes, working at Gitlab, company culture, values, onboarding and more!""",
-            },
-            {"role": "user", "content": input},
-        ]
-    )
-
-    return response.choices[0].message.content
-
-@api_view(["GET"])
-def testGPT3(request, prompt):
-    client = OpenAI(api_key=environ.get("OPEN_AI_KEY"))
-
-    print("key: ", environ.get("OPEN_AI_KEY"))
-
-
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": """You are a helpful assistant""",
-            },
-            {"role": "user", "content": prompt},
-        ]
-    )
-
-    return JsonResponse(response.choices[0].message.content, safe=False)
