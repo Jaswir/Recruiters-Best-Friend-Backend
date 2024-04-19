@@ -275,6 +275,7 @@ def askGPT3(prompt, raw_answer):
             },
             {"role": "user", "content": input},
         ],
+        timeout = 20
     )
 
     return response.choices[0].message.content
@@ -294,7 +295,7 @@ def testGPT3(request, prompt):
                 "content": """You are a helpful assistant""",
             },
             {"role": "user", "content": prompt},
-        ],
+        ]
     )
 
     return JsonResponse(response.choices[0].message.content, safe=False)
