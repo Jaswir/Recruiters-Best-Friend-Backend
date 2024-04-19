@@ -8,50 +8,51 @@ from os import environ
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from openai import OpenAI
 
 
 url = "https://api.vectara.io/v1/query"
 api_key = environ.get("API_KEY")
 customer_id = environ.get("CUSTOMER_ID")
-corpus_id =8
+corpus_id = 12
 
 
 @api_view(["POST"])
 def slackQuery(request):
+    print("CAN YOU SEE THIS slackQuery? ")
+    print(request)
+    print(request.data)
+    text = request.POST.get("text", "")
 
-    prompt = str(request.text)
-    result = get_response(prompt, "Gitlab")
+    print("TEXT: ", text)
 
-    data = {
-        'response_type': 'in_channel',
-        'text': result,
-    }
-    return Response(data, status=status.HTTP_200_OK)
-   
-@api_view(["POST"])
-def analyzeInput(request):
-    data = {
-        'response_type': 'in_channel',
-        'text': request.text,
-    }
-    return Response(data, status=status.HTTP_200_OK)
+    result = get_response(text, "Gitlab")
 
-@api_view(['POST'])
-def hello_there(request):
+    print("RESULT: ", result)
 
     data = {
-        'response_type': 'in_channel',
-        'text': 'sending just text yes',
+        "response_type": "in_channel",
+        "text": result,
     }
     return Response(data, status=status.HTTP_200_OK)
+
 
 @swagger_auto_schema(
     method="get",
     manual_parameters=[
-        openapi.Parameter('company', openapi.IN_QUERY, description="Company name", type=openapi.TYPE_STRING),
-        openapi.Parameter('prompt', openapi.IN_QUERY, description="Prompt for the query", type=openapi.TYPE_STRING),
-    ]
+        openapi.Parameter(
+            "company",
+            openapi.IN_QUERY,
+            description="Company name",
+            type=openapi.TYPE_STRING,
+        ),
+        openapi.Parameter(
+            "prompt",
+            openapi.IN_QUERY,
+            description="Prompt for the query",
+            type=openapi.TYPE_STRING,
+        ),
+    ],
 )
 @api_view(["GET"])
 @parser_classes((MultiPartParser, FormParser))
@@ -60,10 +61,10 @@ def query(request):
     prompt = request.GET.get("prompt", "")  # Example: /query/?prompt=your_prompt_here
     company = request.GET.get("company", "")
 
-        
     if not company:
         return JsonResponse({"result": "Invalid Company Name"}, status=400)
     if prompt:
+        print(f"prompt: {prompt}, \n company: {company}")
         try:
             result = get_response(prompt, company)
             return JsonResponse({"result": result})
@@ -72,7 +73,7 @@ def query(request):
 
     if not prompt:
         return JsonResponse({"result": "Please insert question"}, status=400)
-    
+
 
 @swagger_auto_schema(
     method="post",
@@ -84,7 +85,12 @@ def query(request):
             type="file",
             required=True,
         ),
-         openapi.Parameter('company', openapi.IN_QUERY, description="Company name", type=openapi.TYPE_STRING),
+        openapi.Parameter(
+            "company",
+            openapi.IN_QUERY,
+            description="Company name",
+            type=openapi.TYPE_STRING,
+        ),
     ],
     responses={200: openapi.Response("File successfully uploaded!")},
 )
@@ -98,15 +104,17 @@ def uploadFile(request):
         return JsonResponse({"error": "No pdf file provided"}, status=400, safe=False)
 
     if not request.GET.get("company", ""):
-        return JsonResponse({"error": "Company name not provided"}, status=400, safe=False)
-    
+        return JsonResponse(
+            {"error": "Company name not provided"}, status=400, safe=False
+        )
+
     uploaded_file = request.FILES["uploaded_file"]
 
     company = request.GET.get("company", "")
     filename = uploaded_file.name
 
     files = [("file", (f"{filename}", uploaded_file.read(), "application/pdf"))]
-    payload = {"doc_metadata": json.dumps({"Company": company})}
+    payload = {"doc_metadata": json.dumps({"HTML": company})}
 
     headers = {
         "Accept": "application/json",
@@ -114,7 +122,9 @@ def uploadFile(request):
         "customer-id": customer_id,
     }
 
-    response = requests.request("POST", upload_url, headers=headers, data=payload, files=files)
+    response = requests.request(
+        "POST", upload_url, headers=headers, data=payload, files=files
+    )
 
     print(response.text)
 
@@ -122,13 +132,14 @@ def uploadFile(request):
 
 
 def get_response(prompt, company):
+
     payload = {
         "query": [
             {
                 "query": prompt,
                 "queryContext": "",
                 "start": 0,
-                "numResults": 10,
+                "numResults": 3,
                 "contextConfig": {
                     "charsBefore": 0,
                     "charsAfter": 0,
@@ -140,10 +151,10 @@ def get_response(prompt, company):
                 "corpusKey": [
                     {
                         "customerId": customer_id,
-                        "corpusId": 8,
+                        "corpusId": corpus_id,
                         "semantics": 0,
-                        "metadataFilter": f"doc.Company='{company}'",
-                        "lexicalInterpolationConfig": {"lambda": 0.98},
+                        "metadataFilter": "",
+                        "lexicalInterpolationConfig": {"lambda": 1},
                         "dim": [],
                     }
                 ],
@@ -151,9 +162,9 @@ def get_response(prompt, company):
                     {
                         "debug": False,
                         "chat": {"store": True, "conversationId": ""},
-                        "maxSummarizedResults": 5,
+                        "maxSummarizedResults": 3,
                         "responseLang": "eng",
-                        "summarizerPromptName": "vectara-summary-ext-v1.2.0",
+                        "summarizerPromptName": "vectara-experimental-summary-ext-2023-12-11-large",
                         "factualConsistencyScore": True,
                     }
                 ],
@@ -165,11 +176,99 @@ def get_response(prompt, company):
         "Content-Type": "application/json",
         "Accept": "application/json",
         "x-api-key": api_key,
-        "customer-id": customer_id,
     }
 
     response = requests.post(url, headers=headers, json=payload)
 
     response_data = response.json()
-    result = response_data["responseSet"][0]["summary"][0]["text"]
-    return result
+    result = response_data["responseSet"][0]["summary"][0]
+    text = result["text"]
+
+    print("Output Vectara: ", text)
+    factualConsistencyScore = result["factualConsistency"]["score"]
+
+    if factualConsistencyScore < 0.3:
+        text = askGPT3(prompt)
+        print("Output GPT3: ", text)
+
+    return text
+
+
+@api_view(["GET"])
+def list_doc(request, company):
+    url = "https://api.vectara.io/v1/list-documents"
+
+    payload = json.dumps(
+        {"corpusId": corpus_id, "numResults": 1000, "pageKey": "", "metadataFilter": ""}
+    )
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "x-api-key": api_key,
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    data = response.json()
+    data = data["document"]
+    company_items = filter(lambda item: is_company(item, company), data)
+    company_items = list(company_items)
+
+    ids = [item.get("id") for item in company_items]
+
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Return the JSON response from the external API
+        return JsonResponse(ids, safe=False)
+    else:
+        # If the request was unsuccessful, return an error response
+        return JsonResponse(
+            {"error": "Failed to fetch documents"}, status=response.status_code
+        )
+
+
+def is_company(item, company):
+    return any(metadata.get("value") == company for metadata in item.get("metadata"))
+
+
+@api_view(["GET"])
+@parser_classes((MultiPartParser, FormParser))
+def del_doc(request, id):
+
+    url = "https://api.vectara.io/v1/delete-doc"
+
+    payload = json.dumps(
+        {
+            "customerId": customer_id,
+            "corpusId": corpus_id,
+            "documentId": id,
+        }
+    )
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "cutomer-id": customer_id,
+        "x-api-key": api_key,
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    return JsonResponse({"Task": "Deleted docs"})
+
+
+def askGPT3(prompt):
+
+    client = OpenAI(api_key=environ.get("OPEN_AI_KEY"))
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": """You are an interview process assistant for Gitlab. """,
+            },
+            {"role": "user", "content": prompt},
+        ],
+    )
+
+    return response.choices[0].message.content
