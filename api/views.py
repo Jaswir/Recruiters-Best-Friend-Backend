@@ -186,7 +186,7 @@ def get_response(prompt, company):
                         "customerId": customer_id,
                         "corpusId": 8,
                         "semantics": 0,
-                        "metadataFilter": f"doc.Company='{company.title()}'",
+                        # "metadataFilter": f"doc.Company='{company.title()}'",
                         "lexicalInterpolationConfig": {"lambda": 1},
                         "dim": [],
                     }
