@@ -47,9 +47,5 @@ urlpatterns = [
     path('hello/', views.hello_there),
     path("list/<company>", views.list_doc),
     path("del_doc/<id>", views.del_doc),
-<<<<<<< HEAD
     path("slash/", slack.slash),
 ]
-=======
-]
->>>>>>> parent of e1d4e8f (Revert "Working version for ALI")
