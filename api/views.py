@@ -34,7 +34,7 @@ def slackQuery(request):
         "response_type": "in_channel",
         "text": result,
     }
-    return Response(data, status=status.HTTP_200_OK)
+    return Response(text, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(
