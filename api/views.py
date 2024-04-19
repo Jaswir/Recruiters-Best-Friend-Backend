@@ -26,7 +26,7 @@ def slackQuery(request):
 
     print("TEXT: ", text)
 
-    # result = get_response(text, "Gitlab")
+    result = get_response(text, "Gitlab")
 
     # print("RESULT: ", result)
 
@@ -34,7 +34,7 @@ def slackQuery(request):
     #     "response_type": "in_channel",
     #     "text": result,
     # }
-    return Response(text, status=status.HTTP_200_OK)
+    return Response(result, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(
