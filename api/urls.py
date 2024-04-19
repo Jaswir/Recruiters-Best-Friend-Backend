@@ -42,6 +42,6 @@ urlpatterns = [
     path("query/", views.query),
     path("upload/", views.uploadFile),
     path("slackQuery/", views.slackQuery),
-    path('analyze/', views.analyzeInput),
-    path('hello/', views.hello_there),
+    path("list/<company>", views.list_doc),
+    path("del_doc/<id>", views.del_doc),
 ]
