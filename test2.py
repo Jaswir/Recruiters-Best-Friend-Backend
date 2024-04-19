@@ -5,7 +5,7 @@ api_key = os.environ.get("API_KEY")
 customer_id = "566695243"
 corpus_id = 12
 
-prompt = "Hi"
+prompt = "Recruiter isn't responding"
 
 payload = {
     "query": [
@@ -25,10 +25,9 @@ payload = {
             "corpusKey": [
                 {
                     "customerId": customer_id,
-                    "corpusId": 8,
+                    "corpusId": corpus_id,
                     "semantics": 0,
                     "metadataFilter": "",
-                    "lexicalInterpolationConfig": {"lambda": 1},
                     "dim": [],
                 }
             ],
