@@ -23,9 +23,9 @@ from api import views
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Hire Chat API",
+        title="Recruiters Best Friend API",
         default_version="v1",
-        description="Hire Chat API",
+        description="Recruiters Best Friend API",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
@@ -44,5 +44,4 @@ urlpatterns = [
     path("slackQuery/", views.slackQuery),
     path("list/<company>", views.list_doc),
     path("del_doc/<id>", views.del_doc),
-    path("askGPT/<prompt>", views.testGPT3),
 ]
