@@ -23,9 +23,9 @@ from api import views
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Recruiters Best Friend API",
+        title="Hire Chat API",
         default_version="v1",
-        description="Recruiters Best Friend API",
+        description="Hire Chat API",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),

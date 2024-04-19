@@ -183,14 +183,14 @@ def get_response(prompt, company):
     result = response_data["responseSet"][0]["summary"][0]
     RawAnswer = result["text"]
 
-    print("Output Vectara: ", RawAnswer)
-    factualConsistencyScore = result["factualConsistency"]["score"]
-    print("Factual Consistency Score: ", factualConsistencyScore)
+    # print("Output Vectara: ", RawAnswer)
+    # factualConsistencyScore = result["factualConsistency"]["score"]
+    # print("Factual Consistency Score: ", factualConsistencyScore)
 
-    text = askGPT3(prompt, RawAnswer)
-    print("Output GPT3: ", text)
+    # text = askGPT3(prompt, RawAnswer)
+    # print("Output GPT3: ", text)
 
-    return text
+    return RawAnswer
 
 
 @api_view(["GET"])
