@@ -181,14 +181,14 @@ def get_response(prompt, company):
 
     response_data = response.json()
     result = response_data["responseSet"][0]["summary"][0]
-    text = result["text"]
+    RawAnswer = result["text"]
 
-    print("Output Vectara: ", text)
+    print("Output Vectara: ", RawAnswer)
     factualConsistencyScore = result["factualConsistency"]["score"]
+    print("Factual Consistency Score: ", factualConsistencyScore)
 
-    if factualConsistencyScore < 0.3:
-        text = askGPT3(prompt)
-        print("Output GPT3: ", text)
+    text = askGPT3(prompt, RawAnswer)
+    print("Output GPT3: ", text)
 
     return text
 
@@ -255,18 +255,22 @@ def del_doc(request, id):
     return JsonResponse({"Task": "Deleted docs"})
 
 
-def askGPT3(prompt):
+def askGPT3(prompt, raw_answer):
 
     client = OpenAI(api_key=environ.get("OPEN_AI_KEY"))
+
+    input = prompt + "this is the raw answer use it in your response: " + raw_answer
+    
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
                 "role": "system",
-                "content": """You are an interview process assistant for Gitlab. """,
+                "content": """You are an interview process assistant for Gitlab, mention this when greeted.
+                You role is to answer questions about our hiring processes, working at Gitlab, company culture, values, onboarding and more!""",
             },
-            {"role": "user", "content": prompt},
+            {"role": "user", "content": input},
         ],
     )
 
