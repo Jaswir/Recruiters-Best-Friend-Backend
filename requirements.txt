@@ -6,3 +6,5 @@ drf_yasg
 setuptools 
 whitenoise
 openai
+urllib3==2.2.1
+gunicorn==21.2.0

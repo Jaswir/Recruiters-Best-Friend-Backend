@@ -274,8 +274,7 @@ def askGPT3(prompt, raw_answer):
                 You role is to answer questions about our hiring processes, working at Gitlab, company culture, values, onboarding and more!""",
             },
             {"role": "user", "content": input},
-        ],
-        timeout = 20
+        ]
     )
 
     return response.choices[0].message.content
